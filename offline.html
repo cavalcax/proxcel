@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3EAF5C">
+    <title>Sem Conexão — Proxcel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body class="h-full flex items-center justify-center bg-gray-50 p-4 font-sans text-center">
+    <div class="max-w-md bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <div class="w-16 h-16 mx-auto bg-green-50 text-green-600 rounded-2xl flex items-center justify-center text-3xl mb-4">
+            <i class="fas fa-wifi-slash"></i>
+        </div>
+        <h1 class="text-xl font-bold text-gray-800 mb-2">Você está offline</h1>
+        <p class="text-sm text-gray-500 mb-6">
+            Não foi possível conectar aos servidores do Proxcel. Verifique sua conexão com a internet e tente novamente.
+        </p>
+        <button onclick="window.location.reload()" class="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2.5 rounded-xl text-sm transition shadow-sm inline-flex items-center gap-2">
+            <i class="fas fa-redo"></i> Tentar Novamente
+        </button>
+    </div>
+</body>
+</html>

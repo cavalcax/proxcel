@@ -1,0 +1,63 @@
+# ============================================================
+# Proxcel - .htaccess Principal
+# ============================================================
+
+# Desabilitar listagem de diretórios
+Options -Indexes
+
+# Impedir acesso a arquivos sensíveis
+<FilesMatch "\.(sql|log|env|ini|bak|config)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear acesso a .htaccess
+<Files .htaccess>
+    Require all denied
+</Files>
+
+# Proteger pastas internas
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Bloquear acesso direto a config/
+    RewriteRule ^config/ - [F,L]
+    
+    # Bloquear acesso direto a includes/
+    RewriteRule ^includes/ - [F,L]
+    
+    # Bloquear acesso direto a storage/
+    RewriteRule ^storage/ - [F,L]
+    
+    # Bloquear acesso direto a sql/
+    RewriteRule ^sql/ - [F,L]
+    
+    # Bloquear acesso direto a templates/
+    RewriteRule ^templates/ - [F,L]
+</IfModule>
+
+# Headers de segurança
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Compressão
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json
+</IfModule>
+
+# Cache de assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
+</IfModule>

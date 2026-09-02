@@ -1,0 +1,29 @@
+{
+    "name": "Proxcel - Assessoria Empresarial",
+    "short_name": "Proxcel",
+    "description": "Sistema de gestão documental Proxcel",
+    "start_url": "./pages/login.php",
+    "scope": ".",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#ffffff",
+    "theme_color": "#3EAF5C",
+    "icons": [
+        {
+            "src": "assets/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "categories": [
+        "business",
+        "productivity"
+    ],
+    "lang": "pt-BR",
+    "dir": "ltr"
+}
