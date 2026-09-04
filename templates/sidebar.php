@@ -110,20 +110,13 @@ function menuClass($page, $dir = '')
                 </a>
             <?php endif; ?>
 
-            <!-- Importação Mensal -->
+            <!-- Upload de Documentos -->
             <?php if (Permissions::has('documentos.criar')): ?>
-                <a href="<?= APP_URL ?>/pages/documentos/importar_mensal.php" class="<?= menuClass('importar_mensal', 'documentos') ?>">
+                <a href="<?= APP_URL ?>/pages/documentos/upload.php" class="<?= menuClass('upload', 'documentos') ?>">
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                        <i class="fas fa-calendar-alt text-sm"></i>
+                        <i class="fas fa-cloud-upload-alt text-sm"></i>
                     </div>
-                    <span>Importação Mensal</span>
-                </a>
-
-                <a href="<?= APP_URL ?>/pages/documentos/importar_trimestral.php" class="<?= menuClass('importar_trimestral', 'documentos') ?>">
-                    <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                        <i class="fas fa-chart-pie text-sm"></i>
-                    </div>
-                    <span>Importação Trimestral</span>
+                    <span>Upload</span>
                 </a>
             <?php endif; ?>
 

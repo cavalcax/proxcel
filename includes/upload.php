@@ -88,18 +88,29 @@ class Upload {
     }
 
     /**
-     * Protege diretório contra execução de scripts
+     * Protege diretório contra qualquer acesso direto via HTTP
      */
     private static function protectDirectory($dir) {
-        $htaccess = $dir . '.htaccess';
+        $htaccess = rtrim($dir, '/\\') . DIRECTORY_SEPARATOR . '.htaccess';
         if (!file_exists($htaccess)) {
             file_put_contents($htaccess, 
-                "# Bloqueia execução de scripts\n" .
-                "<FilesMatch \"\\.(php|phtml|php3|php4|php5|pl|py|jsp|asp|sh|cgi)$\">\n" .
+                "# Bloqueio total de acesso direto a arquivos\n" .
+                "<IfModule mod_authz_core.c>\n" .
                 "    Require all denied\n" .
-                "</FilesMatch>\n\n" .
-                "# Bloqueia acesso direto\n" .
-                "Require all denied\n"
+                "</IfModule>\n" .
+                "<IfModule !mod_authz_core.c>\n" .
+                "    Order deny,allow\n" .
+                "    Deny from all\n" .
+                "</IfModule>\n" .
+                "<FilesMatch \".*\">\n" .
+                "    <IfModule mod_authz_core.c>\n" .
+                "        Require all denied\n" .
+                "    </IfModule>\n" .
+                "    <IfModule !mod_authz_core.c>\n" .
+                "        Order deny,allow\n" .
+                "        Deny from all\n" .
+                "    </IfModule>\n" .
+                "</FilesMatch>\n"
             );
         }
     }

@@ -20,7 +20,7 @@ $action = post('action');
 switch ($action) {
     case 'upload':
         Permissions::requirePermission('documentos.criar');
-        $clienteId = (int)post('cliente_id');
+        $clienteId = Auth::isCliente() ? (int)($_SESSION['user_cliente_id'] ?? 0) : (int)post('cliente_id');
         $categoriaId = (int)post('categoria_id') ?: null;
         $nome = post('nome');
         $descricao = post('descricao');

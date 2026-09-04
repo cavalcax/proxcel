@@ -236,6 +236,7 @@ CREATE TABLE IF NOT EXISTS `ctempresa_proxcel_tokens_recuperacao` (
 -- DADOS INICIAIS: CATEGORIAS DE DOCUMENTOS
 -- ============================================================
 INSERT INTO `ctempresa_proxcel_categorias_documentos` (`nome`, `descricao`, `icone`, `cor`) VALUES
+('Demonstrativos Financeiros', 'Demonstrativos e relatórios financeiros periódicos', 'fa-file-invoice-dollar', '#10B981'),
 ('Contratos', 'Contratos e aditivos', 'fa-file-contract', '#3EAF5C'),
 ('Notas Fiscais', 'Notas fiscais e recibos', 'fa-file-invoice', '#3B82F6'),
 ('Relatórios', 'Relatórios diversos', 'fa-chart-bar', '#8B5CF6'),
