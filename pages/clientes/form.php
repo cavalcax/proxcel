@@ -24,23 +24,33 @@ if ($id) {
 if (isPost()) {
     CSRF::validateOrDie();
     
+    $cnpjRaw = trim(post('cnpj'));
+    $cnpjDigits = preg_replace('/\D/', '', $cnpjRaw);
+    $cnpjFinal = !empty($cnpjDigits) ? $cnpjRaw : null;
+
+    $cpfRaw = trim(post('cpf'));
+    $cpfDigits = preg_replace('/\D/', '', $cpfRaw);
+    $cpfFinal = !empty($cpfDigits) ? $cpfRaw : null;
+
+    $estado = trim(post('estado'));
+
     $dados = [
-        'razao_social' => post('razao_social'),
-        'nome_fantasia' => post('nome_fantasia'),
-        'cnpj' => post('cnpj'),
-        'cpf' => post('cpf'),
-        'email' => post('email'),
-        'telefone' => post('telefone'),
-        'celular' => post('celular'),
-        'cep' => post('cep'),
-        'endereco' => post('endereco'),
-        'numero' => post('numero'),
-        'complemento' => post('complemento'),
-        'bairro' => post('bairro'),
-        'cidade' => post('cidade'),
-        'estado' => post('estado'),
-        'observacoes' => post('observacoes'),
-        'status' => post('status', 'ativo'),
+        'razao_social'  => trim(post('razao_social')),
+        'nome_fantasia' => trim(post('nome_fantasia')) ?: null,
+        'cnpj'          => $cnpjFinal,
+        'cpf'           => $cpfFinal,
+        'email'         => trim(post('email')),
+        'telefone'      => trim(post('telefone')) ?: null,
+        'celular'       => trim(post('celular')) ?: null,
+        'cep'           => trim(post('cep')) ?: null,
+        'endereco'      => trim(post('endereco')) ?: null,
+        'numero'        => trim(post('numero')) ?: null,
+        'complemento'   => trim(post('complemento')) ?: null,
+        'bairro'        => trim(post('bairro')) ?: null,
+        'cidade'        => trim(post('cidade')) ?: null,
+        'estado'        => !empty($estado) ? strtoupper($estado) : null,
+        'observacoes'   => trim(post('observacoes')) ?: null,
+        'status'        => post('status', 'ativo'),
     ];
 
     // Validações
@@ -49,11 +59,33 @@ if (isPost()) {
     if (empty($dados['email'])) $errors[] = 'E-mail é obrigatório.';
     if (!filter_var($dados['email'], FILTER_VALIDATE_EMAIL)) $errors[] = 'E-mail inválido.';
 
+    // Validação de unicidade de CNPJ
+    if (!empty($dados['cnpj'])) {
+        $existsCnpj = db()->fetch(
+            "SELECT id FROM " . tb('clientes') . " WHERE cnpj = ? AND id != ?",
+            [$dados['cnpj'], $id]
+        );
+        if ($existsCnpj) {
+            $errors[] = 'Este CNPJ já está cadastrado em outro cliente.';
+        }
+    }
+
+    // Validação de unicidade de CPF
+    if (!empty($dados['cpf'])) {
+        $existsCpf = db()->fetch(
+            "SELECT id FROM " . tb('clientes') . " WHERE cpf = ? AND id != ?",
+            [$dados['cpf'], $id]
+        );
+        if ($existsCpf) {
+            $errors[] = 'Este CPF já está cadastrado em outro cliente.';
+        }
+    }
+
     if (empty($errors)) {
         try {
             if ($id) {
                 $dadosAnteriores = $cliente;
-                $dados['atualizado_por'] = $currentUser['id'];
+                $dados['atualizado_por'] = $currentUser['id'] ?? null;
                 
                 $sets = [];
                 $params = [];
@@ -67,7 +99,7 @@ if (isPost()) {
                 Security::logChange('clientes', $id, 'editar', $dadosAnteriores, $dados);
                 setFlash('success', 'Cliente atualizado com sucesso!');
             } else {
-                $dados['criado_por'] = $currentUser['id'];
+                $dados['criado_por'] = $currentUser['id'] ?? null;
                 
                 $fields = array_keys($dados);
                 $placeholders = array_fill(0, count($fields), '?');
@@ -76,15 +108,25 @@ if (isPost()) {
                     "INSERT INTO " . tb('clientes') . " (`" . implode('`,`', $fields) . "`) VALUES (" . implode(',', $placeholders) . ")",
                     array_values($dados)
                 );
+                if (!$newId) {
+                    throw new \Exception('O banco de dados não retornou o ID do novo cliente.');
+                }
                 Security::logChange('clientes', $newId, 'criar', null, $dados);
                 setFlash('success', 'Cliente cadastrado com sucesso!');
             }
             redirect(APP_URL . '/pages/clientes/index.php');
         } catch (\Exception $e) {
+            error_log("Erro ao salvar cliente: " . $e->getMessage());
             if (strpos($e->getMessage(), 'Duplicate') !== false) {
-                $errors[] = 'CNPJ ou CPF já cadastrado.';
+                if (strpos($e->getMessage(), 'cnpj') !== false) {
+                    $errors[] = 'CNPJ já cadastrado no sistema.';
+                } elseif (strpos($e->getMessage(), 'cpf') !== false) {
+                    $errors[] = 'CPF já cadastrado no sistema.';
+                } else {
+                    $errors[] = 'CNPJ ou CPF já cadastrado no sistema.';
+                }
             } else {
-                $errors[] = APP_DEBUG ? $e->getMessage() : 'Erro ao salvar. Tente novamente.';
+                $errors[] = APP_DEBUG ? $e->getMessage() : 'Erro ao salvar. Verifique os dados e tente novamente.';
             }
         }
     }

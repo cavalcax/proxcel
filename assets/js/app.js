@@ -582,6 +582,32 @@ function dismissPWA() {
 }
 
 // ============================================================
+// DYNAMIC TABLE SEARCH HELPER
+// ============================================================
+function initDynamicSearch(inputSelector, tableSelector) {
+    const input = document.querySelector(inputSelector);
+    const table = document.querySelector(tableSelector);
+    if (!input || !table) return;
+
+    input.addEventListener('input', () => {
+        const query = input.value.toLowerCase().trim();
+        const rows = table.querySelectorAll('tbody tr:not(.no-results-row):not([id*="no"]):not([id*="empty"])');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            const match = !query || row.textContent.toLowerCase().includes(query);
+            row.style.display = match ? '' : 'none';
+            if (match) visibleCount++;
+        });
+
+        const noResults = table.querySelector('.no-results-row, #noDocResultsRow, #noClienteResultsRow, #noUserResultsRow, #noLogResultsRow');
+        if (noResults) {
+            noResults.style.display = (visibleCount === 0 && rows.length > 0) ? '' : 'none';
+        }
+    });
+}
+
+// ============================================================
 // INITIALIZATION
 // ============================================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -593,3 +619,4 @@ document.addEventListener('DOMContentLoaded', () => {
     initPasswordValidation('#senha', '#senha-feedback');
     initPasswordValidation('#nova_senha', '#nova-senha-feedback');
 });
+
